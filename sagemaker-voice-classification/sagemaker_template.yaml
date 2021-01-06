@@ -1,0 +1,153 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  NotebookInstanceName:
+    Type: String
+    Default: audiopredictionnotebookinstance
+  NotebookInstanceType:
+    Type: String
+    Default: ml.t3.medium
+    AllowedValues: 
+      - ml.c4.2xlarge
+      - ml.c4.4xlarge
+      - ml.c4.8xlarge
+      - ml.c4.xlarge
+      - ml.c5.18xlarge
+      - ml.c5.2xlarge
+      - ml.c5.4xlarge
+      - ml.c5.9xlarge
+      - ml.c5.xlarge
+      - ml.c5d.18xlarge
+      - ml.c5d.2xlarge
+      - ml.c5d.4xlarge
+      - ml.c5d.9xlarge
+      - ml.c5d.xlarge
+      - ml.m4.10xlarge
+      - ml.m4.16xlarge
+      - ml.m4.2xlarge
+      - ml.m4.4xlarge
+      - ml.m4.xlarge
+      - ml.m5.12xlarge
+      - ml.m5.24xlarge
+      - ml.m5.2xlarge
+      - ml.m5.4xlarge
+      - ml.m5.xlarge
+      - ml.p2.16xlarge
+      - ml.p2.8xlarge
+      - ml.p2.xlarge
+      - ml.p3.16xlarge
+      - ml.p3.2xlarge
+      - ml.p3.8xlarge
+      - ml.t2.2xlarge
+      - ml.t2.large
+      - ml.t2.medium
+      - ml.t2.xlarge
+      - ml.t3.2xlarge
+      - ml.t3.large
+      - ml.t3.medium
+      - ml.t3.xlarge
+  SageMakerAPIExecutionRoleName:
+    Type: String
+    Default: SageMakerAPIExecutionRole
+
+Resources:
+  DefaultS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub sagemaker-pytorch-audio-classification-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+  SageMakerAPIExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref SageMakerAPIExecutionRoleName
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sagemaker.amazonaws.com
+            Action: sts:AssumeRole    
+      Path: /
+      Policies:
+        - PolicyName: !Ref SageMakerAPIExecutionRoleName
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - sagemaker:CreateModel
+                  - sagemaker:DeleteEndpointConfig
+                  - sagemaker:DeleteEndpoint
+                  - sagemaker:DeleteModel
+                  - sagemaker:CreateEndpoint
+                  - sagemaker:UpdateEndpoint
+                  - sagemaker:StopNotebookInstance
+                  - sagemaker:StartNotebookInstance
+                  - s3:CreateBucket
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - sts:AssumeRole
+                  - iam:PassRole
+                  - iam:GetRole
+                  - sagemaker:DescribeEndpointConfig
+                  - sagemaker:CreateEndpointConfig
+                  - sageMaker:CreateEndpoint
+                  - sagemaker:DescribeEndpoint
+                  - sagemaker:InvokeEndpoint
+                  - sagemaker:CreateTrainingJob
+                  - sagemaker:DescribeTrainingJob
+                  - ecr:BatchGetImage
+                  - ecr:SetRepositoryPolicy
+                  - ecr:CompleteLayerUpload
+                  - ecr:BatchDeleteImage
+                  - ecr:UploadLayerPart
+                  - ecr:DeleteRepositoryPolicy
+                  - ecr:InitiateLayerUpload
+                  - ecr:DeleteRepository
+                  - ecr:PutImage
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CreateRepository
+                  - ecr:Describe*
+                  - ecr:GetAuthorizationToken
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:StartImageScan
+                  - logs:CreateLogDelivery
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:DeleteLogDelivery
+                  - logs:Describe*
+                  - logs:GetLogDelivery
+                  - logs:GetLogEvents
+                  - logs:ListLogDeliveries
+                  - logs:PutLogEvents
+                  - logs:PutResourcePolicy
+                  - logs:UpdateLogDelivery
+                Resource: "*"
+  SageMakerNotebookInstance:
+    Type: AWS::SageMaker::NotebookInstance
+    Properties:
+      NotebookInstanceName: !Ref NotebookInstanceName
+      InstanceType: !Ref NotebookInstanceType
+      RoleArn: !GetAtt SageMakerAPIExecutionRole.Arn
+      VolumeSizeInGB: 50
+      DefaultCodeRepository: https://github.com/aws-samples/amazon-sagemaker-audio-classification-pytorch.git
+      AdditionalCodeRepositories:
+        - https://github.com/iiscleap/Coswara-Data.git
+
+Outputs:
+  SageMakerNotebookInstance:
+    Value: !Ref SageMakerNotebookInstance
+  SageMakerDefaultS3Bucket:
+    Value: !Ref DefaultS3Bucket
+
