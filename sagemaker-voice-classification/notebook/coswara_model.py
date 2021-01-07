@@ -52,11 +52,11 @@ if __name__ == "__main__":
     print("output:", output.shape)
 
     print("Test 2:")
-    csv_path = Path("/home/ec2-user/efs_project/coswara/data/breathing-deep-metadata.csv")
-    file_path = Path("/home/ec2-user/efs_project/coswara/data")
+    datapath = Path("/home/ec2-user/SageMaker/Coswara-Data")
+    csvpath = datapath / "breathing-deep-metadata.csv"
     dataset = CoswareDataset(
-        csv_path=csv_path,
-        file_path=file_path,
+        csv_path=csvpath,
+        file_path=datapath,
         new_sr=8000,
         audio_len=20,
         sampling_ratio=5,

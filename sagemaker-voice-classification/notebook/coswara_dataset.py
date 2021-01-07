@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 
 status2idx = {
     "healthy": 0,
-    "resp_illness_not_identified": 1,
     "no_resp_illness_exposed": 1,
     "recovered_full": 1,
+    "resp_illness_not_identified": 1,
     "positive_mild": 1,
     "positive_asymp": 1,
     "positive_moderate": 1,

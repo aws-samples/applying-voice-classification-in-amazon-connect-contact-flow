@@ -17,7 +17,7 @@ from pathlib import Path
 from coswara_dataset import CoswareDataset
 from coswara_model import NetM3
 from torch.utils.data import random_split, DataLoader
-from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_score, fbeta_score
+from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_score, fbeta_score, roc_auc_score
 ## oversampling to handle imbalance data set
 import numpy as np
 from imblearn.over_sampling import RandomOverSampler
@@ -38,16 +38,17 @@ def train(model, epoch, train_loader, device, optimizer, log_interval):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         optimizer.zero_grad()
+        ## oversampling
         data_resampled, target_resampled = ros.fit_resample(np.squeeze(data), target)
         data = torch.from_numpy(data_resampled)
         data = data.unsqueeze_(-2)
         target = torch.tensor(target_resampled)
+        
         data, target = data.to(device), target.to(device)
         output = model(data)
         output = output.permute(1, 0, 2)[0]  # original output dimensions are batchSizex1x10
         pred = output.max(1, keepdim=True)[1]  # get the index of the max log-probability
-        predictions= pred.cpu().numpy().flatten()
-        accuracy = accuracy_score(target_resampled, predictions)
+        accuracy = accuracy_score(target_resampled, pred.cpu().numpy().flatten())
         loss = F.nll_loss(output, target)  # the loss functions expects a batchSizex10 input
         loss.backward()
         optimizer.step()
@@ -66,32 +67,38 @@ def test(model, test_loader, device):
     total = 0
     actuals = []
     predictions = []
+    prediction_probs = []
     with torch.no_grad():
         for data, target in test_loader:
+            ## oversampling
             data_resampled, target_resampled = ros.fit_resample(np.squeeze(data), target)
             data = torch.from_numpy(data_resampled)
             data = data.unsqueeze_(-2)
             target = torch.tensor(target_resampled)
+
             data, target = data.to(device), target.to(device)
             output = model(data)
             output = output.permute(1, 0, 2)[0]
             test_loss += F.nll_loss(output, target, reduction="sum").item()  # sum up batch loss
             pred = output.max(1, keepdim=True)[1]  # get the index of the max log-probability
+            pred_prob = output.cpu().detach().numpy()[:,1] # get the log-probability for the second class that will be used to calculate prediction probability later using numpy exponential function
             actuals.extend(target.cpu().numpy())
             predictions.extend(pred.cpu().numpy().flatten())
+            prediction_probs.extend(pred_prob)
             correct += pred.eq(target.view_as(pred)).sum().item()
             total += len(target.cpu().numpy())
 
     test_loss /= total
     accuracy = accuracy_score(actuals, predictions)
+    rocauc = roc_auc_score(actuals, np.exp(prediction_probs))
     precision = precision_score(actuals, predictions, average='weighted')
     recall = recall_score(actuals, predictions, average='weighted')
     f1 = f1_score(actuals, predictions, average='weighted')
     f2 = fbeta_score(actuals, predictions, average='weighted', beta=0.5)
     
     print(
-        "Test set: Average loss: {:.4f}, F1: {:.4f}, F2: {:.4f}, Precision: {:.4f}, Recall: {:.4f}, Accuracy: {:.4f}, corrected prediction ratio: {}/{}".format(
-            test_loss, f1, f2, precision, recall, accuracy, correct, total
+        "Test set: Average loss: {:.4f}, F1: {:.4f}, F2: {:.4f}, Precision: {:.4f}, Recall: {:.4f}, ROCAUC: {:.4f}, Accuracy: {:.4f}, corrected prediction ratio: {}/{}".format(
+            test_loss, f1, f2, precision, recall, rocauc, accuracy, correct, total
         )
     )
     print("\n")
