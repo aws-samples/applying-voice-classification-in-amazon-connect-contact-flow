@@ -141,7 +141,7 @@ Resources:
       InstanceType: !Ref NotebookInstanceType
       RoleArn: !GetAtt SageMakerAPIExecutionRole.Arn
       VolumeSizeInGB: 50
-      DefaultCodeRepository: https://github.com/aws-samples/amazon-sagemaker-audio-classification-pytorch.git
+      DefaultCodeRepository: https://github.com/aws-samples/applying-voice-classification-in-amazon-connect-contact-flow.git
       AdditionalCodeRepositories:
         - https://github.com/iiscleap/Coswara-Data.git
 
