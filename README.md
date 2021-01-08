@@ -26,7 +26,7 @@ You can create the lambda functions to process live media streaming for the Amaz
 
 We will be using Amazon Connect contact flow to trigger Lambda functions, created in the previous step, to [process the captured audio recording](https://docs.aws.amazon.com/connect/latest/adminguide/customer-voice-streams.html) in Amazon Kinesis Video Stream, assuming you already have an Amazon Connect instance ready to use. If you do need to learn more about setting up an Amazon Connect instance, you can follow [the steps here](https://docs.aws.amazon.com/connect/latest/adminguide/amazon-connect-instances.html). You will need to follow [the instructions](https://docs.aws.amazon.com/connect/latest/adminguide/customer-voice-streams.html) to enable live audio streaming for your Amazon Connect instance as well. You can create a new contact flow by importing the flow configuration file downloaded here. You will need to claim a phone number and assiciate it with the newly created contact flow. There are two Lambda functions to be configured here: the ARNs of ContactFlowlambdaInitArn and ContactFlowlambdaTriggerArn in your CFN outputs tab deployed in previous step
 
-![contactflow](images/ConnectContactFlow.jpg)
+![contactflow](images/ConnectContactFlow.png)
 
 ## Security
 
