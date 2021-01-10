@@ -1,21 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
-  "AI Powered Speach Analytics for Amazon Connect:
+  "Appling voice classification in Amazon Connect contact flow:
   - Create the basic foundation for streaming customer audio from Amazon Connect by deploying:
-  - S3 Bucket for audio files, and the sample contact flow
-  - Dynamo DB tables: transcriptSegments, transcriptSegmentsToCustomer, and contactDetails
+  - S3 Bucket for audio recordings
+  - Dynamo DB tables: liveaudioStreamingMLinference and liveaudioStreamingcontactDetails
   - A Lambda triggered on inbound contacts to store the initial contact details
   - A Lambda to trigger and pass the stream details to the Java Lambda
   - A Java Lambda to consume KVS and stream it to Amazon Transcribe, store the segments in DDB and upload the raw audio to S3
-  - A Node.js Lambda triggered by S3 once WAV file is uploaded to store the concatenated transcript segments in the contact details table along with the S3 location of the audio file
-  - A Node.js Lambda triggered by CloudFormation to create a sample Amazon Connect contact flow, pre-populated with the Lambda ARNs and placed in the S3 bucket for you to import in to your Amazon Connect instance.
-Mappings:
-  FunctionMap:
-    Configuration:
-      SolutionID: "SOXXXX"
-  Send:
-    AnonymousUsage:
-      Data: "Yes"
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
@@ -69,11 +60,11 @@ Parameters:
     Description:  The name of the DynamoDB Table where contact details will be written (Ensure you do not have a table with this name already).
   existingS3BucketName:
     Type: String
-    Default: liveaudiostreaming-deploy
-    Description: The name of the S3 bucket that contains the zipped lambda files
+    Default: connect-voice-classification
+    Description: The name of the S3 bucket that contains the zipped lambda files and connect contact flow
   existingS3Path:
     Type: String
-    Default: deployment/
+    Default: connect-deployment/
     Description: The path to the zipped lambda files in the existingS3BucketName
   SageMakerInferenceEndpointName:
     Type: String
@@ -101,10 +92,6 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Ref s3BucketName
-      AccessControl: LogDeliveryWrite
-      LoggingConfiguration:
-        DestinationBucketName: !Ref s3BucketName
-        LogFilePrefix: 'logs/'
       VersioningConfiguration:
         Status: Enabled
       PublicAccessBlockConfiguration:
@@ -420,7 +407,6 @@ Resources:
           SAVE_PARTIAL_TRANSCRIPTS: "TRUE"
           START_SELECTOR_TYPE: "NOW"
           SM_ENDPOINT_NAME: !Ref SageMakerInferenceEndpointName
-          SEND_ANONYMOUS_DATA: !FindInMap [ "Send", "AnonymousUsage", "Data"]
 
       Code:
         S3Bucket: !Ref existingS3BucketName

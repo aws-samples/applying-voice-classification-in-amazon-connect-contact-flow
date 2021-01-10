@@ -93,6 +93,8 @@ Resources:
                   - sagemaker:UpdateEndpoint
                   - sagemaker:StopNotebookInstance
                   - sagemaker:StartNotebookInstance
+                  - sagemaker:CreateHyperParameterTuningJob
+                  - sagemaker:DescribeHyperParameterTuningJob
                   - s3:CreateBucket
                   - s3:PutObject
                   - s3:GetObject

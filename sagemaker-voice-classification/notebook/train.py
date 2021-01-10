@@ -1,11 +1,3 @@
-"""
-
-# Reference papers
-
-- [Very Deep Convolutional Neural Networks for Raw Waveforms]
-  (https://arxiv.org/abs/1610.00087)
-
-"""
 import argparse
 import torch
 import torch.nn as nn
