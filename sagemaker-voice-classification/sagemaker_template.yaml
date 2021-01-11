@@ -55,7 +55,7 @@ Resources:
   DefaultS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub sagemaker-pytorch-audio-classification-${AWS::AccountId}
+      BucketName: !Sub sagemaker-audio-classification-${AWS::AccountId}
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         BlockPublicPolicy: True

@@ -14,7 +14,6 @@ Metadata:
           default: Existing configuration
           Parameters:
             - existingS3BucketName
-            - existingS3Path
       - Label:
           default: Amazon S3 Configuration
         Parameters:
@@ -34,18 +33,13 @@ Metadata:
         default: Transcript Table Name for audio from the customer
       contactDetailsTable:
         default: Contacts Table Name
-      existingS3Path:
-        default: Existing S3 Bucket Name
       existingS3BucketName:
-        default: Existing Path in the existing S3 Bucket
+        default: Existing S3 Bucket Name
 Parameters:
   s3BucketName:
     Type: String
     Default: liveaudiostreaming-demo
-    Description: >
-      Enter the (globally unique) name you would like to use for the Amazon S3 bucket where we will store the audio files, and the sample contact flow.
-      This template will fail to deploy if the bucket name you chose is currently in use.
-    AllowedPattern: '(?=^.{3,63}$)(?!^(\d+\.)+\d+$)(^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$)'
+    Description: Enter the (globally unique) name you would like to use for the Amazon S3 bucket where we will store the audio files. This template will fail to deploy if the bucket name you chose is currently in use.
   audioFilePrefix:
     Type: String
     Default:  recordings/
@@ -62,10 +56,6 @@ Parameters:
     Type: String
     Default: connect-voice-classification
     Description: The name of the S3 bucket that contains the zipped lambda files and connect contact flow
-  existingS3Path:
-    Type: String
-    Default: connect-deployment/
-    Description: The path to the zipped lambda files in the existingS3BucketName
   SageMakerInferenceEndpointName:
     Type: String
     Description: The SageMaker Inference Endpoint Name to make machine learning prediction
@@ -410,7 +400,7 @@ Resources:
 
       Code:
         S3Bucket: !Ref existingS3BucketName
-        S3Key: !Join ["", [!Ref existingS3Path, 'connect-audio-stream-solution.zip']]
+        S3Key: connect-audio-stream-solution.zip
 
   kvsConsumerTrigger:
     Type: "AWS::Lambda::Function"
@@ -428,7 +418,7 @@ Resources:
           transcriptionFunction: !Ref kvsMLInferenceFunction
       Code:
         S3Bucket: !Ref existingS3BucketName
-        S3Key: !Join ["", [!Ref existingS3Path, 'kvs_trigger.zip']]
+        S3Key: kvs_trigger.zip
 
   initContactDetails:
     Type: "AWS::Lambda::Function"
@@ -446,7 +436,7 @@ Resources:
           assume_role: !GetAtt ConnectUserStsRole.Arn
       Code:
         S3Bucket: !Ref existingS3BucketName
-        S3Key: !Join ["", [!Ref existingS3Path, 'contact_init.zip']]
+        S3Key: contact_init.zip
 
 Outputs:
   InferenceDDBTable:
