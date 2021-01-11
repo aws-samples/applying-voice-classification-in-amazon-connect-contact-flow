@@ -159,7 +159,7 @@ public class KVSMLInferenceLambda implements RequestHandler<AudioPredictionReque
 
                         InvokeEndpointResult result = smclient.invokeEndpoint(invokeEndpointRequest);
                         String body = StandardCharsets.UTF_8.decode(result.getBody()).toString();
-                        logger.info("SageMaker Inference result body: "+body);
+                        logger.info("SageMaker Inference result for the probability of positive class: "+body);
 
                         //Write to DynamoDB
                         AmazonDynamoDB ddbbuilder = AmazonDynamoDBClientBuilder

@@ -7,7 +7,7 @@ import os
 
 from pathlib import Path
 from coswara_dataset import CoswareDataset
-from coswara_model import NetM3
+from inference import NetM3
 from torch.utils.data import random_split, DataLoader
 from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_score, fbeta_score, roc_auc_score
 ## oversampling to handle imbalance data set
