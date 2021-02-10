@@ -34,7 +34,7 @@ You can create the lambda functions to process live media streaming for the Amaz
 You will need to fill in the S3 bucket name for audio recording and SageMaker inference endpoint as parameters:  
 ![cloudformation](images/cloudformation.png)
 
-If you want to deploy this stack in other AWS regions, rather than US-EAST-1, or you want to make change to the Lambda functions, feel free to create a new S3 bucket in your AWS account, and change the CFN parameter existingS3BucketName to your newly created bucket name. You will need to upload the zipped Lambda function packages to that bucket, including connect-audio-stream-solution.zip, contact_init.zip, create_contact_flow.zip, kvs_trigger.zip. The packaged Lambda functions are available in the connect-audio-stream-solution/deployment folder (https://github.com/aws-samples/applying-voice-classification-in-amazon-connect-contact-flow/tree/main/connect-audio-stream-solution/deployment).
+If you want to deploy this stack in other AWS regions, rather than US-EAST-1, or you want to make change to the Lambda functions, go to the [connect-audio-stream-solution](https://github.com/aws-samples/applying-voice-classification-in-amazon-connect-contact-flow/tree/main/connect-audio-stream-solution) folder and follow the steps for [AWS SAM](https://aws.amazon.com/serverless/sam/) deployment.
 
 Take a note of the CFN stack outputs for the Lambda function ARNs, which will be used in the next step:
 ![cfnoutput](images/cfnoutput.png)
