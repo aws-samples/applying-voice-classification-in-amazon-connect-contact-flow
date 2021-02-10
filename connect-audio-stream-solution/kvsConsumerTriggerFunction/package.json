@@ -1,0 +1,9 @@
+{
+    "name": "kvsConsumerTrigger",
+    "version": "1.0.0",
+    "description": "AWS Lambda Function to start (asynchronous) streaming transcription; it is expected to be called by the Amazon Connect Contact Flow.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aws-samples/applying-voice-classification-in-amazon-connect-contact-flow"
+    }
+}

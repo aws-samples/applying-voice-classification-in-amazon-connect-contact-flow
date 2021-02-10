@@ -1,0 +1,9 @@
+{
+    "name": "initContactDetails",
+    "version": "1.0.0",
+    "description": "AWS Lambda Function that will be triggered when the call starts so that we have the initial contact details which can later add to when we have the transcript, and audio file location.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aws-samples/applying-voice-classification-in-amazon-connect-contact-flow"
+    }
+}
