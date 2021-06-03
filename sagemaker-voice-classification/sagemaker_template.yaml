@@ -65,6 +65,8 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
   SageMakerAPIExecutionRole:
     Type: AWS::IAM::Role
     Properties:
